@@ -47,9 +47,11 @@ function createTables() {
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       email TEXT UNIQUE NOT NULL,
-      password TEXT NOT NULL,
+      password TEXT,
       name TEXT,
       role TEXT DEFAULT 'customer',
+      googleId TEXT,
+      picture TEXT,
       stripeCustomerId TEXT,
       favorites TEXT DEFAULT '[]',
       savedStores TEXT DEFAULT '[]',

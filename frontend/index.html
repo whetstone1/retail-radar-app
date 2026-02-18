@@ -289,7 +289,10 @@
       font-size: 16px;
       font-family: var(--font-main);
       color: var(--rr-gray-900);
+      background: transparent;
+      min-width: 0;
     }
+    .hero-search-input:focus { outline: none; box-shadow: none; }
     .hero-search-input::placeholder { color: var(--rr-gray-500); }
 
     .hero-search-btn {
@@ -554,7 +557,8 @@
     .product-card-distance { font-size: 13px; color: var(--rr-gray-500); display: flex; align-items: center; gap: 4px; }
     .product-card-delivery { font-size: 12px; font-weight: 600; color: var(--rr-orange); margin-top: 4px; }
     .product-card-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .product-card-actions .btn { flex: 1; justify-content: center; font-size: 13px; padding: 8px 12px; }
+    .product-card-actions .btn { flex: 1; justify-content: center; font-size: 13px; padding: 8px 12px; text-decoration: none; text-align: center; }
+    .product-card-more details[open] summary { color: var(--rr-red); }
 
     .savings-badge {
       background: rgba(46, 125, 50, 0.1);
@@ -755,6 +759,8 @@
     .spinner { width: 20px; height: 20px; border: 3px solid var(--rr-gray-300); border-top-color: var(--rr-red); border-radius: 50%; animation: spin 0.6s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -779,8 +785,7 @@
     </ul>
 
     <div class="nav-actions">
-      <button class="btn btn-outline" onclick="showAuth('login')">Log In</button>
-      <button class="btn btn-primary" onclick="showAuth('register')">Sign Up</button>
+      <button class="btn btn-primary" onclick="showAuth('login')">Sign In</button>
     </div>
   </div>
 </nav>
@@ -794,7 +799,7 @@
       <p class="hero-sub">Find products at stores near you. Compare prices, get faster delivery, and support local businesses — all from your browser.</p>
 
       <div class="hero-search" id="heroSearch">
-        <input type="text" id="searchInput" placeholder="Search for products nearby..." autofocus>
+        <input type="text" id="searchInput" class="hero-search-input" placeholder="Search for products nearby..." autofocus>
         <button class="hero-search-btn" onclick="performSearch()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           Search
@@ -969,11 +974,23 @@
 <!-- ===== AUTH MODAL ===== -->
 <div class="modal-overlay" id="authModal">
   <div class="modal">
-    <h2 id="authTitle">Sign Up</h2>
-    <p id="authSubtitle">Create your Retail Radar account</p>
+    <h2 id="authTitle">Sign In</h2>
+    <p id="authSubtitle">Continue with Google to get started</p>
     <div class="alert" id="authAlert"></div>
+    
+    <!-- Google Sign-In Button -->
+    <div id="googleBtnContainer" style="display:flex; justify-content:center; margin: 20px 0;">
+      <div id="googleSignInBtn"></div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px; margin: 20px 0;">
+      <div style="flex:1; height:1px; background: var(--rr-gray-200);"></div>
+      <span style="font-size:13px; color: var(--rr-gray-500); font-weight:500;">or use email</span>
+      <div style="flex:1; height:1px; background: var(--rr-gray-200);"></div>
+    </div>
+
     <form id="authForm" onsubmit="handleAuth(event)">
-      <div class="form-group" id="nameGroup">
+      <div class="form-group" id="nameGroup" style="display:none;">
         <label>Full Name</label>
         <input type="text" id="authName" placeholder="Cole Smith">
       </div>
@@ -985,17 +1002,17 @@
         <label>Password</label>
         <input type="password" id="authPassword" placeholder="Min 8 characters" required>
       </div>
-      <div class="form-group" id="roleGroup">
+      <div class="form-group" id="roleGroup" style="display:none;">
         <label>Account Type</label>
         <select id="authRole">
           <option value="customer">Customer</option>
           <option value="store_owner">Store Owner</option>
         </select>
       </div>
-      <button type="submit" class="btn btn-primary form-submit" id="authSubmit">Create Account</button>
+      <button type="submit" class="btn btn-primary form-submit" id="authSubmit">Log In</button>
     </form>
     <p style="text-align:center; margin-top: 16px; font-size: 14px; color: var(--rr-gray-500);">
-      <span id="authSwitch">Already have an account? <a href="#" onclick="showAuth('login'); return false;">Log in</a></span>
+      <span id="authSwitch">No account? <a href="#" onclick="showAuth('register'); return false;">Sign up with email</a></span>
     </p>
   </div>
 </div>
@@ -1012,6 +1029,15 @@ async function init() {
   detectLocation();
   loadStats();
   loadCategories();
+
+  // Load Google Client ID from server config
+  try {
+    const cfgRes = await fetch(`${API}/config`);
+    const cfg = await cfgRes.json();
+    if (cfg.googleClientId) {
+      window.RETAIL_RADAR_GOOGLE_CLIENT_ID = cfg.googleClientId;
+    }
+  } catch (e) {}
 
   // Check stored auth
   const stored = localStorage.getItem('rr_token');
@@ -1131,6 +1157,31 @@ function searchByCategory(cat) {
   performSearch(cat);
 }
 
+// ===== Click Tracking & Helpers =====
+function encodeAttr(str) {
+  return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function trackClick(sku, productName, retailerKey, storeId, price, action) {
+  // Fire-and-forget beacon — don't block the navigation
+  try {
+    const body = JSON.stringify({
+      productSku: sku,
+      productName: decodeURIComponent(productName.replace(/\\'/g, "'")),
+      retailerKey,
+      storeId,
+      price,
+      action,
+    });
+    // Use sendBeacon if available (works even during page unload)
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(`${API}/click/track`, new Blob([body], { type: 'application/json' }));
+    } else {
+      fetch(`${API}/click/track`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true });
+    }
+  } catch (e) { /* tracking is best-effort */ }
+}
+
 function renderResults(data) {
   const grid = document.getElementById('resultsGrid');
   document.getElementById('resultsMeta').textContent = `${data.pagination.totalResults} products found within ${data.location.radius} miles`;
@@ -1149,12 +1200,17 @@ function renderResults(data) {
   grid.innerHTML = data.results.map(r => {
     const store = r.nearestStore;
     const savingsPct = r.product.basePrice > r.bestPrice ? Math.round(((r.product.basePrice - r.bestPrice) / r.product.basePrice) * 100) : 0;
+    const buyUrl = store?.buyUrl || '#';
+    const storeUrl = store?.storeUrl || '#';
+    const sku = r.product.sku;
+    const retailerKey = store?.retailerKey || '';
+    const productName = r.product.name;
 
     return `
       <div class="product-card">
         <div class="product-card-top">
           <div>
-            <div class="product-card-name">${r.product.name}</div>
+            <div class="product-card-name">${productName}</div>
             <div class="product-card-cat">${r.product.category}</div>
           </div>
           ${savingsPct > 0 ? `<span class="savings-badge">-${savingsPct}% off</span>` : ''}
@@ -1170,9 +1226,30 @@ function renderResults(data) {
           </div>` : ''}
         </div>
         <div class="product-card-actions">
-          <button class="btn btn-primary" onclick="toast('Delivery option coming soon!')">🚗 Deliver</button>
-          <button class="btn btn-outline" onclick="toast('Pickup reserved!')">🏪 Pickup</button>
+          <a href="${buyUrl}" target="_blank" rel="noopener" class="btn btn-primary" onclick="trackClick('${sku}', '${encodeAttr(productName)}', '${retailerKey}', '${store?.id || ''}', ${r.bestPrice}, 'delivery')">
+            🚗 Buy &amp; Deliver
+          </a>
+          <a href="${storeUrl}" target="_blank" rel="noopener" class="btn btn-outline" onclick="trackClick('${sku}', '${encodeAttr(productName)}', '${retailerKey}', '${store?.id || ''}', ${r.bestPrice}, 'pickup')">
+            🏪 Pickup
+          </a>
         </div>
+        ${r.allStores.length > 1 ? `
+          <div class="product-card-more">
+            <details>
+              <summary style="cursor:pointer; font-size:13px; color:var(--rr-gray-500); padding-top:8px;">Compare ${r.allStores.length} stores</summary>
+              <div style="margin-top:8px;">
+                ${r.allStores.map(s => `
+                  <a href="${s.buyUrl || '#'}" target="_blank" rel="noopener" 
+                     onclick="trackClick('${sku}', '${encodeAttr(productName)}', '${s.retailerKey || ''}', '${s.storeId}', ${s.price}, 'click')"
+                     style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-size:13px; color:var(--rr-gray-700); text-decoration:none; border-bottom:1px solid var(--rr-gray-100);">
+                    <span>${s.brand} · ${s.distance} mi</span>
+                    <span style="font-weight:600;">$${s.price.toFixed(2)} →</span>
+                  </a>
+                `).join('')}
+              </div>
+            </details>
+          </div>
+        ` : ''}
       </div>
     `;
   }).join('');
@@ -1196,22 +1273,87 @@ function clearSearch() {
 }
 
 // ===== Auth =====
+// Google Client ID — loaded from /api/config (set GOOGLE_CLIENT_ID env var)
+function getGoogleClientId() { return window.RETAIL_RADAR_GOOGLE_CLIENT_ID || ''; }
+
+let googleInitialized = false;
+
+function initGoogleSignIn() {
+  if (googleInitialized || !window.google || !getGoogleClientId()) return;
+  google.accounts.id.initialize({
+    client_id: getGoogleClientId(),
+    callback: handleGoogleCredential,
+  });
+  googleInitialized = true;
+}
+
+function renderGoogleButton() {
+  const container = document.getElementById('googleSignInBtn');
+  if (!container) return;
+  container.innerHTML = '';
+  
+  if (!getGoogleClientId() || !window.google) {
+    document.getElementById('googleBtnContainer').innerHTML = 
+      '<p style="font-size:13px; color: var(--rr-gray-500); text-align:center;">Google Sign-In available when deployed.<br>Use email/password below for now.</p>';
+    return;
+  }
+  
+  initGoogleSignIn();
+  google.accounts.id.renderButton(container, {
+    theme: 'outline',
+    size: 'large',
+    width: 300,
+    text: 'continue_with',
+    shape: 'pill',
+  });
+}
+
+async function handleGoogleCredential(response) {
+  try {
+    const res = await fetch(`${API}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById('authAlert').className = 'alert error';
+      document.getElementById('authAlert').textContent = data.error || 'Google sign-in failed';
+      return;
+    }
+
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('rr_token', authToken);
+    document.getElementById('authModal').classList.remove('active');
+    updateNavForUser();
+    toast(`Welcome, ${currentUser.name?.split(' ')[0] || 'there'}! 🎉`);
+  } catch (err) {
+    document.getElementById('authAlert').className = 'alert error';
+    document.getElementById('authAlert').textContent = 'Network error. Please try again.';
+  }
+}
+
 function showAuth(mode) {
   const modal = document.getElementById('authModal');
   const isRegister = mode === 'register';
-  document.getElementById('authTitle').textContent = isRegister ? 'Sign Up' : 'Log In';
-  document.getElementById('authSubtitle').textContent = isRegister ? 'Create your Retail Radar account' : 'Welcome back';
+  document.getElementById('authTitle').textContent = isRegister ? 'Create Account' : 'Sign In';
+  document.getElementById('authSubtitle').textContent = isRegister ? 'Join Retail Radar' : 'Continue with Google to get started';
   document.getElementById('nameGroup').style.display = isRegister ? '' : 'none';
   document.getElementById('roleGroup').style.display = isRegister ? '' : 'none';
   document.getElementById('authSubmit').textContent = isRegister ? 'Create Account' : 'Log In';
   document.getElementById('authSwitch').innerHTML = isRegister
-    ? 'Already have an account? <a href="#" onclick="showAuth(\'login\'); return false;">Log in</a>'
-    : 'No account? <a href="#" onclick="showAuth(\'register\'); return false;">Sign up</a>';
+    ? 'Already have an account? <a href="#" onclick="showAuth(\'login\'); return false;">Sign in</a>'
+    : 'Need email signup? <a href="#" onclick="showAuth(\'register\'); return false;">Create account</a>';
   document.getElementById('authAlert').className = 'alert';
   document.getElementById('authAlert').textContent = '';
   modal.classList.add('active');
   modal.dataset.mode = mode;
   modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+  
+  // Render Google button after modal is visible
+  setTimeout(renderGoogleButton, 100);
 }
 
 async function handleAuth(e) {
@@ -1272,8 +1414,14 @@ async function fetchProfile() {
 function updateNavForUser() {
   const actions = document.querySelector('.nav-actions');
   if (currentUser) {
+    const avatar = currentUser.picture 
+      ? `<img src="${currentUser.picture}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;" referrerpolicy="no-referrer" />`
+      : `<div style="width:32px; height:32px; border-radius:50%; background:var(--rr-red); color:white; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;">${(currentUser.name || currentUser.email)[0].toUpperCase()}</div>`;
     actions.innerHTML = `
-      <span style="font-size: 14px; font-weight: 500; color: var(--rr-gray-700);">Hi, ${currentUser.name?.split(' ')[0] || currentUser.email}</span>
+      <div style="display:flex; align-items:center; gap:10px;">
+        ${avatar}
+        <span style="font-size: 14px; font-weight: 500; color: var(--rr-gray-700);">${currentUser.name?.split(' ')[0] || currentUser.email}</span>
+      </div>
       <button class="btn btn-outline" onclick="logout()">Log Out</button>
     `;
   }
@@ -1283,9 +1431,12 @@ function logout() {
   authToken = null;
   currentUser = null;
   localStorage.removeItem('rr_token');
+  // Revoke Google session if available
+  if (window.google && googleInitialized) {
+    try { google.accounts.id.disableAutoSelect(); } catch(e) {}
+  }
   document.querySelector('.nav-actions').innerHTML = `
-    <button class="btn btn-outline" onclick="showAuth('login')">Log In</button>
-    <button class="btn btn-primary" onclick="showAuth('register')">Sign Up</button>
+    <button class="btn btn-primary" onclick="showAuth('login')">Sign In</button>
   `;
   toast('Logged out');
 }

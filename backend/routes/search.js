@@ -8,6 +8,7 @@ const { validate, rules } = require('../middleware/validation');
 const { optionalAuth } = require('../middleware/auth');
 const { PRODUCTS, inventory, getAllStores } = require('../models/database');
 const { calculateDistance, findNearbyStores, estimateDeliveryTime } = require('../utils/geo');
+const { generateProductUrl, generateStoreUrl, brandToKey } = require('../utils/deep-links');
 const config = require('../config');
 
 // POST /api/search - Advanced product search
@@ -104,28 +105,40 @@ router.post('/', rules.search, validate, optionalAuth, (req, res) => {
         name: product.name,
         category: product.category,
         image: product.image,
+        brand: product.brand || null,
         basePrice: product.price,
       },
       bestPrice,
       storeCount: filteredInv.length,
-      nearestStore: nearestStore ? {
-        id: nearestStore.storeId,
-        name: nearestStore.name,
-        brand: nearestStore.brand,
-        address: nearestStore.address,
-        distance: nearestStore.distance,
-        deliveryEstimate: estimateDeliveryTime(nearestStore.distance),
-        price: nearestInv.price,
-        quantity: nearestInv.quantity,
-      } : null,
-      allStores: filteredInv.slice(0, 5).map(inv => ({
-        storeId: inv.storeId,
-        name: storeMap[inv.storeId]?.name,
-        brand: storeMap[inv.storeId]?.brand,
-        distance: storeMap[inv.storeId]?.distance,
-        price: inv.price,
-        quantity: inv.quantity,
-      })),
+      nearestStore: nearestStore ? (() => {
+        const rKey = brandToKey(nearestStore.brand);
+        return {
+          id: nearestStore.storeId,
+          name: nearestStore.name,
+          brand: nearestStore.brand,
+          retailerKey: rKey,
+          address: nearestStore.address,
+          distance: nearestStore.distance,
+          deliveryEstimate: estimateDeliveryTime(nearestStore.distance),
+          price: nearestInv.price,
+          quantity: nearestInv.quantity,
+          buyUrl: rKey ? generateProductUrl(rKey, product.name, { brand: product.brand }) : null,
+          storeUrl: rKey ? generateStoreUrl(rKey, userLat, userLng) : null,
+        };
+      })() : null,
+      allStores: filteredInv.slice(0, 5).map(inv => {
+        const rKey = brandToKey(storeMap[inv.storeId]?.brand);
+        return {
+          storeId: inv.storeId,
+          name: storeMap[inv.storeId]?.name,
+          brand: storeMap[inv.storeId]?.brand,
+          retailerKey: rKey,
+          distance: storeMap[inv.storeId]?.distance,
+          price: inv.price,
+          quantity: inv.quantity,
+          buyUrl: rKey ? generateProductUrl(rKey, product.name, { brand: product.brand }) : null,
+        };
+      }),
       relevanceScore: product.relevanceScore,
     });
   }

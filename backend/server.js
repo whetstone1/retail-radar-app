@@ -27,6 +27,7 @@ const monetizationConsumerRoutes = require('./routes/monetization-consumer');
 const scraperRoutes = require('./routes/scraper');
 const dashboardRoutes = require('./routes/dashboard');
 const paymentRoutes = require('./routes/payments');
+const clickRoutes = require('./routes/clicks');
 
 // Import database for stats
 const db = require('./models/database');
@@ -71,6 +72,13 @@ app.use(express.static(path.join(__dirname, '..', 'frontend')));
 // ============================================
 // Health Check & API Info
 // ============================================
+// Public config (safe to expose — no secrets)
+app.get('/api/config', (req, res) => {
+  res.json({
+    googleClientId: process.env.GOOGLE_CLIENT_ID || '',
+  });
+});
+
 app.get('/api/health', (req, res) => {
   const allStores = db.getAllStores();
   res.json({
@@ -186,6 +194,7 @@ app.use('/api/monetization/consumer', monetizationConsumerRoutes);
 app.use('/api/scraper', scraperRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/click', clickRoutes);
 
 // ============================================
 // Serve portal
