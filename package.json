@@ -1,0 +1,32 @@
+{
+  "name": "retail-radar-app",
+  "version": "2.2.0",
+  "description": "Retail Radar - Shop local, from home. Full-stack backend + website + scraper + Chrome extension.",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "test": "node tests/run-tests.js",
+    "seed": "node backend/utils/seed.js",
+    "scrape": "node scraper/index.js",
+    "scrape:all": "node scraper/index.js --allMetros --radius=30",
+    "scrape:ingest": "node scraper/index.js --ingest"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0-rc.12",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "node-fetch": "^2.7.0",
+    "sql.js": "^1.14.0",
+    "stripe": "^20.3.1",
+    "uuid": "^9.0.0"
+  },
+  "license": "UNLICENSED"
+}

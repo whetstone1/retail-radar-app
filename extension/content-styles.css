@@ -1,0 +1,253 @@
+/* Retail Radar - Amazon Overlay Styles */
+#retail-radar-overlay {
+  position: fixed;
+  top: 80px;
+  right: 16px;
+  width: 320px;
+  max-height: calc(100vh - 100px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  animation: rrSlideIn 0.4s ease-out;
+}
+
+@keyframes rrSlideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.rr-closing {
+  animation: rrSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes rrSlideOut {
+  to { opacity: 0; transform: translateX(40px); }
+}
+
+/* Header */
+.rr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: #E53935;
+  color: #fff;
+}
+
+.rr-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rr-logo-icon {
+  font-size: 22px;
+  font-weight: 900;
+  font-style: italic;
+  background: #fff;
+  color: #E53935;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rr-logo-text {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.rr-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.8;
+}
+.rr-close:hover { opacity: 1; }
+
+/* Title */
+.rr-title {
+  padding: 12px 14px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Results */
+.rr-results-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 0 14px;
+}
+
+.rr-result {
+  padding: 8px 10px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.rr-result:hover {
+  border-color: #E53935;
+  background: #fff5f5;
+}
+.rr-result.rr-best {
+  border-color: #E53935;
+  background: #fff5f5;
+}
+
+.rr-result-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rr-result-store {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.rr-result-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.rr-result-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #E53935;
+}
+
+.rr-result-distance {
+  font-size: 11px;
+  color: #888;
+}
+
+/* Price Comparison */
+.rr-comparison {
+  padding: 10px 14px;
+  display: flex;
+  gap: 12px;
+}
+
+.rr-price-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.rr-price-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 2px 0;
+}
+
+.rr-savings {
+  color: #E53935;
+  font-size: 14px;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.rr-amazon-price, .rr-amazon-delivery {
+  font-size: 11px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.rr-delivery-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 2px 0;
+}
+
+/* CTA */
+.rr-cta-text {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  padding: 6px 14px 4px;
+}
+
+.rr-buttons {
+  display: flex;
+  gap: 8px;
+  padding: 8px 14px;
+}
+
+.rr-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.rr-btn:active { transform: scale(0.97); }
+
+.rr-btn-delivery {
+  background: #E53935;
+  color: #fff;
+}
+.rr-btn-delivery:hover { background: #c62828; }
+
+.rr-btn-pickup {
+  background: #fff;
+  color: #E53935;
+  border: 2px solid #E53935;
+}
+.rr-btn-pickup:hover { background: #fff5f5; }
+
+/* No results */
+.rr-no-results {
+  padding: 20px 14px;
+  text-align: center;
+  color: #666;
+  font-size: 13px;
+}
+.rr-hint { font-size: 11px; color: #999; margin-top: 8px; }
+
+/* Footer */
+.rr-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+
+.rr-location {
+  font-size: 11px;
+  color: #666;
+}
+
+.rr-powered {
+  font-size: 10px;
+  color: #E53935;
+  text-decoration: none;
+}
+.rr-powered:hover { text-decoration: underline; }

@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail Radar™ — Shop local, from home.</title>
+  <meta name="description" content="Find local products near you, compare prices, and get faster delivery from neighborhood stores. Beat Amazon on shipping time and price.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --rr-red: #E53935;
+      --rr-red-dark: #C62828;
+      --rr-red-light: #EF5350;
+      --rr-black: #1A1A1A;
+      --rr-white: #FFFFFF;
+      --rr-gray-50: #FAFAFA;
+      --rr-gray-100: #F5F5F5;
+      --rr-gray-200: #EEEEEE;
+      --rr-gray-300: #E0E0E0;
+      --rr-gray-500: #9E9E9E;
+      --rr-gray-700: #616161;
+      --rr-gray-900: #212121;
+      --rr-green: #2E7D32;
+      --rr-orange: #F57C00;
+      --font-main: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+      --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-main);
+      color: var(--rr-gray-900);
+      background: var(--rr-white);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ===== NAV ===== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--rr-gray-200);
+      transition: all 0.3s;
+    }
+    .nav.scrolled { box-shadow: var(--shadow-md); }
+
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--rr-red);
+    }
+    .nav-logo svg { width: 32px; height: 32px; }
+    .nav-logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo-text span { color: var(--rr-gray-900); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--rr-gray-700);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--rr-red); }
+
+    .nav-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--rr-gray-100);
+      border-radius: 40px;
+      padding: 6px 16px;
+      width: 280px;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+    .nav-search:focus-within {
+      background: white;
+      border-color: var(--rr-red);
+      box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.1);
+    }
+    .nav-search input {
+      border: none;
+      background: none;
+      outline: none;
+      font-family: var(--font-main);
+      font-size: 14px;
+      width: 100%;
+      color: var(--rr-gray-900);
+    }
+    .nav-search svg { width: 16px; height: 16px; color: var(--rr-gray-500); flex-shrink: 0; }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-family: var(--font-main);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--rr-red);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--rr-red-dark); transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      color: var(--rr-gray-700);
+      border: 1.5px solid var(--rr-gray-300);
+    }
+    .btn-outline:hover { border-color: var(--rr-red); color: var(--rr-red); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--rr-gray-700);
+    }
+    .btn-ghost:hover { color: var(--rr-red); }
+
+    .location-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--rr-gray-700);
+      background: var(--rr-gray-100);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .location-badge .dot { width: 6px; height: 6px; background: var(--rr-green); border-radius: 50%; }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 140px 24px 80px;
+      background: linear-gradient(165deg, #FFF5F5 0%, #FFF 30%, var(--rr-gray-50) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(229,57,53,0.06) 0%, transparent 70%);
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(229,57,53,0.04) 0%, transparent 70%);
+    }
+
+    .hero-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(229, 57, 53, 0.08);
+      color: var(--rr-red);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -2px;
+      color: var(--rr-gray-900);
+      margin-bottom: 20px;
+      animation: slideUp 0.8s ease;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--rr-red);
+      position: relative;
+    }
+    .hero h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: rgba(229,57,53,0.2);
+      border-radius: 3px;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--rr-gray-700);
+      margin-bottom: 36px;
+      max-width: 500px;
+      line-height: 1.7;
+      animation: slideUp 0.8s ease 0.1s both;
+    }
+
+    /* Search box */
+    .hero-search {
+      display: flex;
+      gap: 0;
+      background: white;
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      border: 2px solid var(--rr-gray-200);
+      overflow: hidden;
+      max-width: 520px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      animation: slideUp 0.8s ease 0.2s both;
+    }
+    .hero-search:focus-within {
+      border-color: var(--rr-red);
+      box-shadow: 0 8px 30px rgba(229, 57, 53, 0.15);
+    }
+
+    .hero-search-input {
+      flex: 1;
+      padding: 16px 20px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      font-family: var(--font-main);
+      color: var(--rr-gray-900);
+    }
+    .hero-search-input::placeholder { color: var(--rr-gray-500); }
+
+    .hero-search-btn {
+      background: var(--rr-red);
+      color: white;
+      border: none;
+      padding: 16px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: var(--font-main);
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hero-search-btn:hover { background: var(--rr-red-dark); }
+    .hero-search-btn svg { width: 18px; height: 18px; }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 40px;
+      animation: slideUp 0.8s ease 0.3s both;
+    }
+    .hero-stat-num {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--rr-gray-900);
+    }
+    .hero-stat-label {
+      font-size: 13px;
+      color: var(--rr-gray-500);
+      margin-top: 2px;
+    }
+
+    .hero-visual {
+      position: relative;
+      animation: fadeIn 1s ease 0.3s both;
+    }
+    .hero-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      padding: 24px;
+      max-width: 420px;
+      margin-left: auto;
+      border: 1px solid var(--rr-gray-200);
+    }
+    .hero-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .hero-card-header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--rr-gray-700);
+    }
+    .hero-card-header .badge-found {
+      background: rgba(46, 125, 50, 0.1);
+      color: var(--rr-green);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .result-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: var(--rr-gray-50);
+      margin-bottom: 10px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .result-item:hover { background: var(--rr-gray-100); transform: translateX(4px); }
+
+    .result-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--rr-gray-200);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .result-info { flex: 1; }
+    .result-name { font-size: 14px; font-weight: 600; color: var(--rr-gray-900); }
+    .result-store { font-size: 12px; color: var(--rr-gray-500); }
+    .result-price-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+    .result-price { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--rr-green); }
+    .result-delivery {
+      font-size: 11px;
+      color: var(--rr-orange);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hero-card-footer {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .hero-card-footer .btn { flex: 1; justify-content: center; font-size: 13px; padding: 10px 16px; }
+
+    /* ===== CATEGORIES ===== */
+    .categories {
+      padding: 80px 24px;
+      background: white;
+    }
+    .section-inner { max-width: 1280px; margin: 0 auto; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    .section-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+    }
+    .cat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 24px 16px;
+      border-radius: var(--radius-lg);
+      background: var(--rr-gray-50);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
+      color: var(--rr-gray-900);
+    }
+    .cat-card:hover {
+      border-color: var(--rr-red);
+      background: rgba(229, 57, 53, 0.04);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+    .cat-icon { font-size: 32px; }
+    .cat-name { font-size: 14px; font-weight: 600; text-align: center; }
+    .cat-count { font-size: 12px; color: var(--rr-gray-500); }
+
+    /* ===== HOW IT WORKS ===== */
+    .how-it-works {
+      padding: 80px 24px;
+      background: var(--rr-gray-50);
+    }
+    .hiw-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .hiw-card {
+      text-align: center;
+      padding: 40px 24px;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s;
+    }
+    .hiw-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+
+    .hiw-num {
+      font-family: var(--font-mono);
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--rr-red);
+      opacity: 0.2;
+      margin-bottom: 16px;
+    }
+    .hiw-icon { font-size: 40px; margin-bottom: 16px; }
+    .hiw-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .hiw-desc { font-size: 14px; color: var(--rr-gray-700); line-height: 1.6; }
+
+    /* ===== SEARCH RESULTS ===== */
+    .search-results {
+      display: none;
+      padding: 100px 24px 80px;
+      min-height: 60vh;
+    }
+    .search-results.active { display: block; }
+    .search-results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .search-results-header h2 { font-size: 24px; font-weight: 700; }
+    .search-results-header .meta { font-size: 14px; color: var(--rr-gray-500); }
+
+    .results-filters {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--rr-gray-300);
+      background: white;
+      font-family: var(--font-main);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--rr-gray-700);
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--rr-red);
+      color: var(--rr-red);
+      background: rgba(229, 57, 53, 0.04);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--rr-gray-200);
+      padding: 20px;
+      transition: all 0.25s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      border-color: var(--rr-red);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+    .product-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .product-card-name { font-size: 16px; font-weight: 700; line-height: 1.3; }
+    .product-card-cat {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--rr-gray-500); margin-top: 4px;
+    }
+    .product-card-stores { font-size: 13px; color: var(--rr-gray-500); margin: 8px 0; }
+    .product-card-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rr-gray-100); }
+    .product-card-price { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--rr-green); }
+    .product-card-distance { font-size: 13px; color: var(--rr-gray-500); display: flex; align-items: center; gap: 4px; }
+    .product-card-delivery { font-size: 12px; font-weight: 600; color: var(--rr-orange); margin-top: 4px; }
+    .product-card-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .product-card-actions .btn { flex: 1; justify-content: center; font-size: 13px; padding: 8px 12px; }
+
+    .savings-badge {
+      background: rgba(46, 125, 50, 0.1);
+      color: var(--rr-green);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--rr-gray-500);
+    }
+    .no-results svg { width: 64px; height: 64px; opacity: 0.3; margin-bottom: 16px; }
+    .no-results h3 { font-size: 20px; color: var(--rr-gray-700); margin-bottom: 8px; }
+
+    /* ===== CTA / EXTENSION ===== */
+    .cta-section {
+      padding: 80px 24px;
+      background: var(--rr-red);
+      color: white;
+      text-align: center;
+    }
+    .cta-section h2 {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+    .cta-section p {
+      font-size: 18px;
+      opacity: 0.85;
+      max-width: 500px;
+      margin: 0 auto 32px;
+    }
+    .btn-white {
+      background: white;
+      color: var(--rr-red);
+      font-weight: 700;
+      padding: 14px 32px;
+      font-size: 16px;
+    }
+    .btn-white:hover { background: var(--rr-gray-100); transform: translateY(-2px); }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      padding: 60px 24px 40px;
+      background: var(--rr-gray-900);
+      color: var(--rr-gray-500);
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+    .footer-brand { }
+    .footer-brand .nav-logo { margin-bottom: 16px; }
+    .footer-brand .nav-logo-text { color: white; }
+    .footer-brand .nav-logo-text span { color: var(--rr-gray-500); }
+    .footer-brand p { font-size: 14px; line-height: 1.7; max-width: 300px; }
+
+    .footer-col h4 { color: white; font-size: 14px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .footer-col a { display: block; color: var(--rr-gray-500); text-decoration: none; font-size: 14px; margin-bottom: 10px; transition: color 0.2s; }
+    .footer-col a:hover { color: white; }
+
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 40px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    /* ===== AUTH MODAL ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-xl);
+      animation: slideUp 0.3s ease;
+    }
+    .modal h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .modal p { color: var(--rr-gray-500); font-size: 14px; margin-bottom: 24px; }
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--rr-gray-500);
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--rr-gray-700); }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--rr-gray-300);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-main);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--rr-red); }
+    .form-submit { width: 100%; margin-top: 8px; padding: 12px; font-size: 15px; justify-content: center; }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .alert.error { display: block; background: #FFEBEE; color: var(--rr-red-dark); }
+    .alert.success { display: block; background: #E8F5E9; color: var(--rr-green); }
+
+    /* ===== TOAST ===== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: var(--rr-gray-900);
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+      .hero h1 { font-size: 40px; }
+      .hero-visual { display: none; }
+      .hiw-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .nav-links { display: none; }
+      .nav-search { width: 200px; }
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 120px 16px 60px; }
+      .hero h1 { font-size: 32px; letter-spacing: -1px; }
+      .hero-stats { gap: 24px; }
+      .hero-search { flex-direction: column; border-radius: var(--radius-md); }
+      .hero-search-btn { border-radius: 0 0 8px 8px; justify-content: center; }
+      .cat-grid { grid-template-columns: repeat(3, 1fr); }
+      .results-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .nav-actions .btn-outline { display: none; }
+      .section-title { font-size: 24px; }
+      .cta-section h2 { font-size: 28px; }
+    }
+
+    /* Loading spinner */
+    .spinner { width: 20px; height: 20px; border: 3px solid var(--rr-gray-300); border-top-color: var(--rr-red); border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 100 100" fill="none"><path d="M20 15 L55 15 Q75 15 75 35 L75 38 Q75 52 62 55 L82 85 L64 85 L46 55 L36 55 L36 85 L20 85 Z M36 30 L36 43 L52 43 Q60 43 60 36.5 Q60 30 52 30 Z" fill="currentColor"/></svg>
+      <span class="nav-logo-text">Retail<span>Radar</span></span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="/api/docs" target="_blank">API</a></li>
+      <li>
+        <span class="location-badge" id="locationBadge">
+          <span class="dot"></span>
+          <span id="locationText">Detecting location...</span>
+        </span>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="btn btn-outline" onclick="showAuth('login')">Log In</button>
+      <button class="btn btn-primary" onclick="showAuth('register')">Sign Up</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="heroSection">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">📍 Now serving 30+ cities nationwide</div>
+      <h1>Shop <em>local</em>,<br>from home.</h1>
+      <p class="hero-sub">Find products at stores near you. Compare prices, get faster delivery, and support local businesses — all from your browser.</p>
+
+      <div class="hero-search" id="heroSearch">
+        <input type="text" id="searchInput" placeholder="Search for products nearby..." autofocus>
+        <button class="hero-search-btn" onclick="performSearch()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Search
+        </button>
+      </div>
+
+      <div class="hero-stats" id="heroStats">
+        <div>
+          <div class="hero-stat-num" id="statStores">—</div>
+          <div class="hero-stat-label">Local Stores</div>
+        </div>
+        <div>
+          <div class="hero-stat-num" id="statProducts">—</div>
+          <div class="hero-stat-label">Products</div>
+        </div>
+        <div>
+          <div class="hero-stat-num" id="statCities">—</div>
+          <div class="hero-stat-label">Cities</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-card-header">
+          <h3>🔴 Retail Radar Found Items Near You</h3>
+          <span class="badge-found">3 matches</span>
+        </div>
+        <div class="result-item">
+          <div class="result-icon">🔨</div>
+          <div class="result-info">
+            <div class="result-name">DeWalt 20V Cordless Drill</div>
+            <div class="result-store">Home Depot Brooklyn · 0.8 mi</div>
+            <div class="result-price-row">
+              <span class="result-price">$89.00</span>
+              <span class="result-delivery">⚡ 15-25 min delivery</span>
+            </div>
+          </div>
+        </div>
+        <div class="result-item">
+          <div class="result-icon">👕</div>
+          <div class="result-info">
+            <div class="result-name">Plastic Hangers 50 Pack</div>
+            <div class="result-store">Target Atlantic Terminal · 0.3 mi</div>
+            <div class="result-price-row">
+              <span class="result-price">$14.99</span>
+              <span class="result-delivery">⚡ 10-15 min pickup</span>
+            </div>
+          </div>
+        </div>
+        <div class="result-item">
+          <div class="result-icon">🔋</div>
+          <div class="result-info">
+            <div class="result-name">AA Batteries 24 Pack</div>
+            <div class="result-store">CVS Brooklyn Heights · 0.2 mi</div>
+            <div class="result-price-row">
+              <span class="result-price">$13.49</span>
+              <span class="result-delivery">⚡ 10-15 min pickup</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-card-footer">
+          <button class="btn btn-primary">🚗 Delivery</button>
+          <button class="btn btn-outline">🏪 Pickup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATEGORIES ===== -->
+<section class="categories" id="categories">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2 class="section-title">Browse Categories</h2>
+      <a href="#" class="btn btn-ghost">View all →</a>
+    </div>
+    <div class="cat-grid" id="categoryGrid"></div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-it-works" id="how-it-works">
+  <div class="section-inner">
+    <h2 class="section-title" style="text-align:center; margin-bottom: 48px;">How Retail Radar Works</h2>
+    <div class="hiw-grid">
+      <div class="hiw-card">
+        <div class="hiw-num">01</div>
+        <div class="hiw-icon">🔍</div>
+        <div class="hiw-title">Search Any Product</div>
+        <div class="hiw-desc">Type what you need — from drill bits to phone chargers. We search inventories at hundreds of stores near you.</div>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-num">02</div>
+        <div class="hiw-icon">📍</div>
+        <div class="hiw-title">Find It Nearby</div>
+        <div class="hiw-desc">See which local stores have it in stock, compare prices, and check delivery or pickup times instantly.</div>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-num">03</div>
+        <div class="hiw-icon">🚀</div>
+        <div class="hiw-title">Get It Fast</div>
+        <div class="hiw-desc">Order for delivery in 15-35 minutes or pick up in store. Support local businesses while beating Amazon's shipping time.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SEARCH RESULTS (hidden by default) ===== -->
+<section class="search-results" id="searchResults">
+  <div class="section-inner">
+    <div class="search-results-header">
+      <div>
+        <h2 id="resultsTitle">Results</h2>
+        <span class="meta" id="resultsMeta"></span>
+      </div>
+      <button class="btn btn-outline" onclick="clearSearch()">← Back to Home</button>
+    </div>
+    <div class="results-filters" id="resultsFilters"></div>
+    <div class="results-grid" id="resultsGrid"></div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section" id="extension">
+  <h2>Get the Chrome Extension</h2>
+  <p>Automatically compare Amazon prices with local stores while you shop online.</p>
+  <a href="#" class="btn btn-white">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity="0.2"/><circle cx="12" cy="12" r="4"/></svg>
+    Add to Chrome — Free
+  </a>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="nav-logo">
+        <svg viewBox="0 0 100 100" fill="none" width="28" height="28"><path d="M20 15 L55 15 Q75 15 75 35 L75 38 Q75 52 62 55 L82 85 L64 85 L46 55 L36 55 L36 85 L20 85 Z M36 30 L36 43 L52 43 Q60 43 60 36.5 Q60 30 52 30 Z" fill="#E53935"/></svg>
+        <span class="nav-logo-text">Retail<span>Radar</span></span>
+      </a>
+      <p>Aggregating local retail inventory into a searchable database. Find products near you, compare prices, and support local businesses.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#categories">Categories</a>
+      <a href="#extension">Chrome Extension</a>
+      <a href="/api/docs">API Docs</a>
+    </div>
+    <div class="footer-col">
+      <h4>For Stores</h4>
+      <a href="#">List Your Store</a>
+      <a href="#">Inventory Tools</a>
+      <a href="#">Analytics</a>
+      <a href="#">Pricing</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Careers</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2024 Retail Radar™. All rights reserved.</span>
+    <span>Shop local, from home.™</span>
+  </div>
+</footer>
+
+<!-- ===== AUTH MODAL ===== -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <h2 id="authTitle">Sign Up</h2>
+    <p id="authSubtitle">Create your Retail Radar account</p>
+    <div class="alert" id="authAlert"></div>
+    <form id="authForm" onsubmit="handleAuth(event)">
+      <div class="form-group" id="nameGroup">
+        <label>Full Name</label>
+        <input type="text" id="authName" placeholder="Cole Smith">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="cole@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="Min 8 characters" required>
+      </div>
+      <div class="form-group" id="roleGroup">
+        <label>Account Type</label>
+        <select id="authRole">
+          <option value="customer">Customer</option>
+          <option value="store_owner">Store Owner</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary form-submit" id="authSubmit">Create Account</button>
+    </form>
+    <p style="text-align:center; margin-top: 16px; font-size: 14px; color: var(--rr-gray-500);">
+      <span id="authSwitch">Already have an account? <a href="#" onclick="showAuth('login'); return false;">Log in</a></span>
+    </p>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const API = '/api';
+let currentUser = null;
+let authToken = null;
+
+// ===== Init =====
+async function init() {
+  detectLocation();
+  loadStats();
+  loadCategories();
+
+  // Check stored auth
+  const stored = localStorage.getItem('rr_token');
+  if (stored) {
+    authToken = stored;
+    fetchProfile();
+  }
+
+  // Search on Enter
+  document.getElementById('searchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') performSearch();
+  });
+
+  // Nav scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+  });
+}
+
+// ===== Location Detection =====
+async function detectLocation() {
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    if (data.city) {
+      document.getElementById('locationText').textContent = `${data.city}, ${data.region_code}`;
+      window.userLat = data.latitude;
+      window.userLng = data.longitude;
+    }
+  } catch (e) {
+    document.getElementById('locationText').textContent = 'Brooklyn, NY';
+    window.userLat = 40.6892;
+    window.userLng = -73.9857;
+  }
+}
+
+// ===== Load Stats =====
+async function loadStats() {
+  try {
+    const res = await fetch(`${API}/health`);
+    const data = await res.json();
+    animateNumber('statStores', data.stats.stores);
+    animateNumber('statProducts', data.stats.products);
+    animateNumber('statCities', data.stats.cities);
+  } catch (e) {
+    document.getElementById('statStores').textContent = '120+';
+    document.getElementById('statProducts').textContent = '35+';
+    document.getElementById('statCities').textContent = '30+';
+  }
+}
+
+function animateNumber(id, target) {
+  const el = document.getElementById(id);
+  let current = 0;
+  const step = Math.max(1, Math.floor(target / 30));
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = current.toLocaleString();
+  }, 30);
+}
+
+// ===== Categories =====
+async function loadCategories() {
+  const cats = [
+    { name: 'Hardware', icon: '🔨', key: 'hardware' },
+    { name: 'Electronics', icon: '📱', key: 'electronics' },
+    { name: 'Home', icon: '🏠', key: 'home' },
+    { name: 'Electrical', icon: '💡', key: 'electrical' },
+    { name: 'Paint', icon: '🎨', key: 'paint' },
+    { name: 'Plumbing', icon: '🔧', key: 'plumbing' },
+    { name: 'Safety', icon: '🥽', key: 'safety' },
+    { name: 'Outdoor', icon: '🌿', key: 'outdoor' },
+  ];
+
+  const grid = document.getElementById('categoryGrid');
+  grid.innerHTML = cats.map(c => `
+    <a class="cat-card" onclick="searchByCategory('${c.key}')">
+      <span class="cat-icon">${c.icon}</span>
+      <span class="cat-name">${c.name}</span>
+    </a>
+  `).join('');
+}
+
+// ===== Search =====
+async function performSearch(query) {
+  const q = query || document.getElementById('searchInput').value.trim();
+  if (!q) return;
+
+  document.getElementById('searchInput').value = q;
+  showResults();
+
+  document.getElementById('resultsTitle').textContent = `Results for "${q}"`;
+  document.getElementById('resultsGrid').innerHTML = '<div style="text-align:center; padding: 40px;"><div class="spinner" style="margin: 0 auto;"></div><p style="margin-top: 12px; color: var(--rr-gray-500);">Searching nearby stores...</p></div>';
+
+  try {
+    const res = await fetch(`${API}/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: q,
+        lat: window.userLat || 40.6892,
+        lng: window.userLng || -73.9857,
+        radius: 15,
+        limit: 30
+      })
+    });
+    const data = await res.json();
+    renderResults(data);
+  } catch (e) {
+    document.getElementById('resultsGrid').innerHTML = '<div class="no-results"><h3>Something went wrong</h3><p>Please try again.</p></div>';
+  }
+}
+
+function searchByCategory(cat) {
+  document.getElementById('searchInput').value = cat;
+  performSearch(cat);
+}
+
+function renderResults(data) {
+  const grid = document.getElementById('resultsGrid');
+  document.getElementById('resultsMeta').textContent = `${data.pagination.totalResults} products found within ${data.location.radius} miles`;
+
+  // Filters
+  const categories = [...new Set(data.results.map(r => r.product.category))];
+  document.getElementById('resultsFilters').innerHTML =
+    `<button class="filter-btn active" onclick="performSearch('${document.getElementById('searchInput').value}')">All</button>` +
+    categories.map(c => `<button class="filter-btn" onclick="searchByCategory('${c}')">${c}</button>`).join('');
+
+  if (data.results.length === 0) {
+    grid.innerHTML = '<div class="no-results"><h3>No local results found</h3><p>Try a different search or expand your radius.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = data.results.map(r => {
+    const store = r.nearestStore;
+    const savingsPct = r.product.basePrice > r.bestPrice ? Math.round(((r.product.basePrice - r.bestPrice) / r.product.basePrice) * 100) : 0;
+
+    return `
+      <div class="product-card">
+        <div class="product-card-top">
+          <div>
+            <div class="product-card-name">${r.product.name}</div>
+            <div class="product-card-cat">${r.product.category}</div>
+          </div>
+          ${savingsPct > 0 ? `<span class="savings-badge">-${savingsPct}% off</span>` : ''}
+        </div>
+        <div class="product-card-stores">📍 Available at ${r.storeCount} store${r.storeCount > 1 ? 's' : ''} near you</div>
+        <div class="product-card-bottom">
+          <div>
+            <div class="product-card-price">$${r.bestPrice.toFixed(2)}</div>
+            ${store ? `<div class="product-card-delivery">⚡ ${store.deliveryEstimate.delivery} delivery</div>` : ''}
+          </div>
+          ${store ? `<div class="product-card-distance">
+            <span>${store.brand}</span> · ${store.distance} mi
+          </div>` : ''}
+        </div>
+        <div class="product-card-actions">
+          <button class="btn btn-primary" onclick="toast('Delivery option coming soon!')">🚗 Deliver</button>
+          <button class="btn btn-outline" onclick="toast('Pickup reserved!')">🏪 Pickup</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showResults() {
+  document.getElementById('heroSection').style.display = 'none';
+  document.getElementById('categories').style.display = 'none';
+  document.querySelectorAll('.how-it-works, .cta-section').forEach(el => el.style.display = 'none');
+  document.getElementById('searchResults').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function clearSearch() {
+  document.getElementById('heroSection').style.display = '';
+  document.getElementById('categories').style.display = '';
+  document.querySelectorAll('.how-it-works, .cta-section').forEach(el => el.style.display = '');
+  document.getElementById('searchResults').classList.remove('active');
+  document.getElementById('searchInput').value = '';
+  window.scrollTo(0, 0);
+}
+
+// ===== Auth =====
+function showAuth(mode) {
+  const modal = document.getElementById('authModal');
+  const isRegister = mode === 'register';
+  document.getElementById('authTitle').textContent = isRegister ? 'Sign Up' : 'Log In';
+  document.getElementById('authSubtitle').textContent = isRegister ? 'Create your Retail Radar account' : 'Welcome back';
+  document.getElementById('nameGroup').style.display = isRegister ? '' : 'none';
+  document.getElementById('roleGroup').style.display = isRegister ? '' : 'none';
+  document.getElementById('authSubmit').textContent = isRegister ? 'Create Account' : 'Log In';
+  document.getElementById('authSwitch').innerHTML = isRegister
+    ? 'Already have an account? <a href="#" onclick="showAuth(\'login\'); return false;">Log in</a>'
+    : 'No account? <a href="#" onclick="showAuth(\'register\'); return false;">Sign up</a>';
+  document.getElementById('authAlert').className = 'alert';
+  document.getElementById('authAlert').textContent = '';
+  modal.classList.add('active');
+  modal.dataset.mode = mode;
+  modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('active'); };
+}
+
+async function handleAuth(e) {
+  e.preventDefault();
+  const mode = document.getElementById('authModal').dataset.mode;
+  const email = document.getElementById('authEmail').value;
+  const password = document.getElementById('authPassword').value;
+  const alert = document.getElementById('authAlert');
+
+  const body = { email, password };
+  if (mode === 'register') {
+    body.name = document.getElementById('authName').value;
+    body.role = document.getElementById('authRole').value;
+  }
+
+  try {
+    const res = await fetch(`${API}/auth/${mode}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert.className = 'alert error';
+      alert.textContent = data.error || data.details?.[0]?.message || 'Something went wrong';
+      return;
+    }
+
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('rr_token', authToken);
+    document.getElementById('authModal').classList.remove('active');
+    updateNavForUser();
+    toast(`Welcome${currentUser.name ? ', ' + currentUser.name : ''}! 🎉`);
+  } catch (err) {
+    alert.className = 'alert error';
+    alert.textContent = 'Network error. Please try again.';
+  }
+}
+
+async function fetchProfile() {
+  try {
+    const res = await fetch(`${API}/auth/profile`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      currentUser = data.user;
+      updateNavForUser();
+    } else {
+      localStorage.removeItem('rr_token');
+      authToken = null;
+    }
+  } catch (e) {}
+}
+
+function updateNavForUser() {
+  const actions = document.querySelector('.nav-actions');
+  if (currentUser) {
+    actions.innerHTML = `
+      <span style="font-size: 14px; font-weight: 500; color: var(--rr-gray-700);">Hi, ${currentUser.name?.split(' ')[0] || currentUser.email}</span>
+      <button class="btn btn-outline" onclick="logout()">Log Out</button>
+    `;
+  }
+}
+
+function logout() {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('rr_token');
+  document.querySelector('.nav-actions').innerHTML = `
+    <button class="btn btn-outline" onclick="showAuth('login')">Log In</button>
+    <button class="btn btn-primary" onclick="showAuth('register')">Sign Up</button>
+  `;
+  toast('Logged out');
+}
+
+// ===== Toast =====
+function toast(msg) {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// Go!
+init();
+</script>
+</body>
+</html>

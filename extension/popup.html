@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=400">
+  <title>Retail Radar</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 380px;
+      min-height: 480px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fff;
+      color: #1a1a1a;
+    }
+
+    /* Header */
+    .header {
+      background: #E53935;
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      font-size: 24px; font-weight: 900; font-style: italic;
+      background: #fff; color: #E53935;
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-text { font-size: 16px; font-weight: 700; }
+    .logo-sub { font-size: 10px; opacity: 0.85; }
+    .header-right { display: flex; gap: 8px; }
+    .header-btn {
+      background: rgba(255,255,255,0.2); border: none; color: #fff;
+      padding: 6px 10px; border-radius: 6px; font-size: 11px;
+      cursor: pointer; font-weight: 600;
+    }
+    .header-btn:hover { background: rgba(255,255,255,0.3); }
+
+    /* Location bar */
+    .location-bar {
+      padding: 8px 16px;
+      background: #f8f8f8;
+      border-bottom: 1px solid #eee;
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .location-bar a { color: #E53935; text-decoration: none; cursor: pointer; }
+
+    /* Search */
+    .search-section { padding: 16px; }
+    .search-box {
+      display: flex;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus-within { border-color: #E53935; }
+    .search-input {
+      flex: 1; border: none; padding: 12px 14px;
+      font-size: 14px; outline: none;
+    }
+    .search-btn {
+      background: #E53935; border: none; color: #fff;
+      padding: 12px 16px; cursor: pointer; font-size: 16px;
+    }
+    .search-btn:hover { background: #c62828; }
+
+    /* Filters */
+    .filters {
+      display: flex; gap: 8px; padding: 8px 16px 0;
+      flex-wrap: wrap;
+    }
+    .filter-chip {
+      padding: 5px 10px; border-radius: 20px;
+      border: 1px solid #ddd; background: #fff;
+      font-size: 11px; color: #555; cursor: pointer;
+    }
+    .filter-chip.active { background: #E53935; color: #fff; border-color: #E53935; }
+
+    /* Results */
+    .results-section { padding: 8px 16px 16px; }
+    .results-header {
+      font-size: 12px; color: #888; padding: 8px 0 4px;
+      display: flex; justify-content: space-between;
+    }
+
+    .result-card {
+      padding: 10px 12px;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .result-card:hover { border-color: #E53935; background: #fff8f8; }
+    .result-name { font-size: 13px; font-weight: 600; }
+    .result-meta { display: flex; justify-content: space-between; margin-top: 4px; align-items: center; }
+    .result-price { font-size: 16px; font-weight: 800; color: #E53935; }
+    .result-info { text-align: right; font-size: 11px; color: #888; }
+    .result-store { font-size: 11px; color: #555; margin-top: 2px; }
+    .result-delivery { font-size: 11px; color: #4CAF50; font-weight: 600; }
+    .result-actions { display: flex; gap: 6px; margin-top: 6px; }
+    .result-btn {
+      flex: 1; padding: 6px; border-radius: 6px;
+      font-size: 11px; font-weight: 700; cursor: pointer; text-align: center;
+    }
+    .btn-delivery { background: #E53935; color: #fff; border: none; }
+    .btn-pickup { background: #fff; color: #E53935; border: 1px solid #E53935; }
+
+    /* States */
+    .loading { text-align: center; padding: 30px; color: #888; }
+    .loading-spinner {
+      width: 32px; height: 32px; border: 3px solid #eee;
+      border-top-color: #E53935; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      text-align: center; padding: 30px 20px; color: #888;
+    }
+    .empty-state .emoji { font-size: 32px; margin-bottom: 8px; }
+    .empty-state p { font-size: 13px; line-height: 1.5; }
+
+    /* Auth modal */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+      z-index: 100;
+    }
+    .modal-overlay.active { display: flex; align-items: center; justify-content: center; }
+    .modal {
+      background: #fff; border-radius: 12px; padding: 24px;
+      width: 340px; max-height: 90vh; overflow-y: auto;
+    }
+    .modal h3 { margin-bottom: 16px; font-size: 18px; }
+    .modal input {
+      width: 100%; padding: 10px 12px; border: 1px solid #ddd;
+      border-radius: 8px; margin-bottom: 10px; font-size: 13px;
+    }
+    .modal input:focus { outline: none; border-color: #E53935; }
+    .modal-btn {
+      width: 100%; padding: 11px; background: #E53935; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px;
+      font-weight: 700; cursor: pointer; margin-top: 4px;
+    }
+    .modal-btn:hover { background: #c62828; }
+    .modal-link {
+      display: block; text-align: center; margin-top: 12px;
+      font-size: 12px; color: #E53935; cursor: pointer;
+    }
+    .modal-error { color: #E53935; font-size: 12px; margin-bottom: 8px; display: none; }
+
+    /* Membership banner */
+    .membership-banner {
+      margin: 0 16px 8px; padding: 10px 12px;
+      background: linear-gradient(135deg, #E53935, #ff6f61);
+      border-radius: 8px; color: #fff;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .membership-banner .plan-name { font-weight: 700; font-size: 13px; }
+    .membership-banner .plan-perk { font-size: 11px; opacity: 0.9; }
+    .membership-banner .upgrade-btn {
+      background: #fff; color: #E53935; border: none;
+      padding: 5px 10px; border-radius: 6px;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 10px 16px; border-top: 1px solid #eee;
+      text-align: center; font-size: 10px; color: #aaa;
+    }
+    .footer a { color: #E53935; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-icon">R</div>
+      <div>
+        <div class="logo-text">Retail Radar</div>
+        <div class="logo-sub">Shop local, from home.™</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="header-btn" id="auth-btn">Sign In</button>
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="location-bar">
+    <span>📍</span>
+    <span id="location-text">Detecting location...</span>
+    <a id="change-location">Change</a>
+  </div>
+
+  <!-- Membership Banner (hidden by default) -->
+  <div class="membership-banner" id="membership-banner" style="display:none;">
+    <div>
+      <div class="plan-name" id="plan-name">Free</div>
+      <div class="plan-perk" id="plan-perk">Upgrade for free delivery</div>
+    </div>
+    <button class="upgrade-btn" id="upgrade-btn">Upgrade</button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-section">
+    <div class="search-box">
+      <input type="text" class="search-input" id="search-input" placeholder="Search local stores..." autofocus>
+      <button class="search-btn" id="search-btn">🔍</button>
+    </div>
+  </div>
+
+  <!-- Category filters -->
+  <div class="filters" id="filters">
+    <div class="filter-chip active" data-cat="">All</div>
+    <div class="filter-chip" data-cat="hardware">Hardware</div>
+    <div class="filter-chip" data-cat="electronics">Electronics</div>
+    <div class="filter-chip" data-cat="home">Home</div>
+    <div class="filter-chip" data-cat="outdoor">Outdoor</div>
+    <div class="filter-chip" data-cat="electrical">Electrical</div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-section" id="results-section">
+    <div class="empty-state">
+      <div class="emoji">🏪</div>
+      <p>Search for any product to find it<br>at local stores near you.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <a href="http://localhost:3001" target="_blank">Open Retail Radar Website</a> · v2.1
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal">
+      <h3 id="modal-title">Sign In</h3>
+      <div class="modal-error" id="modal-error"></div>
+      <input type="text" id="auth-name" placeholder="Name" style="display:none;">
+      <input type="email" id="auth-email" placeholder="Email">
+      <input type="password" id="auth-password" placeholder="Password">
+      <button class="modal-btn" id="modal-submit">Sign In</button>
+      <span class="modal-link" id="modal-toggle">Don't have an account? Sign up</span>
+      <span class="modal-link" id="modal-close">Cancel</span>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
